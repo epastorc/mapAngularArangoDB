@@ -1,0 +1,12 @@
+[{
+
+"name": "Radio",
+
+"value": "function(radio){
+FOR doc IN WITHIN(Caceres, 39.469591, -6.381758,radio)
+  RETURN doc`
+}",
+
+"parameter": "radio
+
+}]
