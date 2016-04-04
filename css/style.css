@@ -9,8 +9,17 @@ html, body, div.map_container {
 div.map_container {
     position: relative;
     float: left;
-    width: 70%;
-    height: 80%
+    width: 50%;
+    height: 80%;
+}
+div.divlistLocation{
+    position: relative;
+    float: right;
+    width: 50%;
+    margin-left: 10%; 
+}
+#listlocation{
+    margin-left: 20%;
 }
 
 .angular-google-map-container {
@@ -24,6 +33,9 @@ div.map_container {
 div.controls {
     float: right;
     width: 30%;
+}
+#labelrange{
+    font-size: 1.5em;
 }
 
 .markerlabel {
@@ -43,4 +55,3 @@ p {
     margin-top: 20px;
     padding: 0 0 50px 20px;
 }
-

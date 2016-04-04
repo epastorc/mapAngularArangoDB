@@ -18,20 +18,31 @@
 
         <!-- Custom angular module -->
         <script src="js/map.js?v=1.0"></script>
+
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
     </head>
     <body ng-controller="MapCtrl">
-        <div class="map_container" >
-            <google-map center="map.center" zoom="map.zoom" draggable="true" options="map.options" control="map.control">
-                <markers models="map.markers" coords="'self'" options="'options'" isLabel='true'>
-                </markers>
-            </google-map>
-        </div>  
-
-        <input type="range" id="range">
-        <button ng-click="locationRadius()">Buscar por radio</button>
-        <ul> Listado de lugares más cercanos
-            <li ng-repeat="c in listalugares"> {{c}}</li>
-        </ul>
-
+        
+            <div class="map_container" >
+                <google-map center="map.center" zoom="map.zoom" draggable="true" options="map.options" control="map.control" events="map.events">
+                    <markers models="map.markers" coords="'self'" options="'options'" isLabel='true'>
+                    </markers>
+                </google-map>
+            </div>  
+            <div id="divlistLocation">
+                <ul id="listlocation"  class="collection with-header"> 
+                    <li class="collection-header"><h4>Listado de lugares más cercanos</h4></li>
+                    <li class="collection-item" ng-repeat="c in listalugares"> {{c.nombre}}<a href="#!" class="secondary-content">{{c.distancia}}m</a></div></li>
+                </ul>
+            </div>
+        <input type="range" id="range" class="rangeLocation" ng-change="changevalue()" ng-model="rangevalue">
+        <label for="range" id="labelrange">Distancia: {{value}}</label>
+    </br>
+        <button class="waves-effect waves-light btn" ng-click="locationRadius()">Buscar por radio</button>
+        <button class="waves-effect waves-light btn" ng-click="addCurrentLocation()">Obtener ubicación</button>
     </body>
 </html>
