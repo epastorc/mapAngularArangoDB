@@ -54,11 +54,10 @@ app.controller('MapCtrl', ['MarkerCreatorService', '$scope','$http', function (M
             $scope.autentiaMarker = marker;
             $scope.currentlocation = marker;
         });
-        $value = 1500;
         $scope.changevalue = function(){
             $scope.value = $scope.rangevalue*30;
         };
-        
+        $value = 1500;
         $scope.locationRadius = function (){
             var x = document.getElementById("range").value*30;
             var lista =[];
