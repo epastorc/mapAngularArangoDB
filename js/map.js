@@ -4,11 +4,12 @@ app.factory('MarkerCreatorService', function () {
 
     var markerId = 0;
 
-    function create(latitude, longitude) {
+    function create(latitude, longitude, title) {
         var marker = {
             options: {
-                animation: 1,
+                animation: 4,
                 labelAnchor: "28 -5",
+                labelContent: title,
                 labelClass: 'markerlabel'    
             },
             latitude: latitude,
@@ -24,15 +25,15 @@ app.factory('MarkerCreatorService', function () {
         }
     }
 
-    function createByCoords(latitude, longitude, successCallback) {
-        var marker = create(latitude, longitude);
+    function createByCoords(latitude, longitude, title, successCallback) {
+        var marker = create(latitude, longitude, title);
         invokeSuccessCallback(successCallback, marker);
     }
 
     function createByCurrentLocation(successCallback) {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
-                var marker = create(position.coords.latitude, position.coords.longitude);
+                var marker = create(position.coords.latitude, position.coords.longitude, "Estas aquí");
                 invokeSuccessCallback(successCallback, marker);
             });
         } else {
@@ -49,60 +50,56 @@ app.factory('MarkerCreatorService', function () {
 
 
 app.controller('MapCtrl', ['MarkerCreatorService', '$scope','$http', function (MarkerCreatorService, $scope,$http) {
+        $scope.value = 1500;
 
-        MarkerCreatorService.createByCoords(39.4858977, -6.370572100000004, function (marker) {
-            $scope.autentiaMarker = marker;
+        MarkerCreatorService.createByCoords(39.4858977, -6.370572100000004, "Estás aquí", function (marker) {
             $scope.currentlocation = marker;
         });
+
         $scope.changevalue = function(){
             $scope.value = $scope.rangevalue*30;
         };
-        $value = 1500;
+
         $scope.locationRadius = function (){
-            var x = document.getElementById("range").value*30;
-            var lista =[];
-            var position= { query : "FOR doc IN WITHIN(Caceres, "+$scope.currentlocation.latitude+", "+$scope.currentlocation.longitude+","+x+",'distancia') RETURN doc`", count : true};
+            var radius = document.getElementById("range").value*30;
+            var position= { query : "FOR doc IN WITHIN(Caceres, "+$scope.currentlocation.latitude+", "+$scope.currentlocation.longitude+","+radius+",'distancia') RETURN doc", count : true};
+            $scope.listalugares =[];
             $scope.map.markers=[];
             $scope.map.markers.push($scope.currentlocation);
             $http.post("http://127.0.0.1:8529/_api/cursor",JSON.stringify(position)).then(function(data){
-                console.log(data.data.result);
                 for (var i = 0; i < data.data.result.length; i++) {
-                         MarkerCreatorService.createByCoords(data.data.result[i].latitude, data.data.result[i].longitude, function (marker) {
-                            marker.options.labelContent = data.data.result[i].nombre;
-                             var objetoListado={
-                                nombre:"",
-                                distancia:0.0
-                            };
-                            objetoListado.nombre = data.data.result[i].nombre;
-                            objetoListado.distancia = data.data.result[i].distancia.toFixed(2);
-                            lista.push(objetoListado);
+                    MarkerCreatorService.createByCoords(data.data.result[i].lat, data.data.result[i].lon, data.data.result[i].nombre, function (marker) {
+                        $scope.map.markers.push(marker);
 
-                            $scope.map.markers.push(marker);
-                            
-                        });
-                };                           
-                $scope.listalugares = lista;
-                 console.log($scope.listalugares);
+                        var objetoListado={
+                            nombre:"",
+                            distancia:0.0
+                        };
+                        objetoListado.nombre = data.data.result[i].nombre;
+                        objetoListado.distancia = data.data.result[i].distancia.toFixed(2);
+                        $scope.listalugares.push(objetoListado);
+                    });
+                };
             });
         };
         $scope.address = '';
         $scope.map = {
             center: {
-                latitude: $scope.autentiaMarker.latitude,
-                longitude: $scope.autentiaMarker.longitude
+                latitude: $scope.currentlocation.latitude,
+                longitude: $scope.currentlocation.longitude
             },
             zoom: 12,
             markers: [],
             events: {
             click: function (map, eventName, originalEventArgs) {
                 var e = originalEventArgs[0];
-                $scope.currentlocation.latitude = e.latLng.lat();
-                $scope.currentlocation.longitude = e.latLng.lng();
-                $scope.currentlocation.options.labelContent = 'Estás aquí';
-                $scope.map.markers=[];
-                $scope.map.markers.push($scope.currentlocation);
-                refresh(marker);
-                $scope.$apply();
+                MarkerCreatorService.createByCoords(e.latLng.lat(), e.latLng.lng(), 'Estás aquí', function (marker) {
+                        $scope.currentlocation = marker;
+                        $scope.map.markers=[];
+                        $scope.map.markers.push(marker);
+                        refresh(marker);
+                        $scope.$apply();
+                    });
                 }
             },
             control: {},
@@ -114,7 +111,6 @@ app.controller('MapCtrl', ['MarkerCreatorService', '$scope','$http', function (M
 
         $scope.addCurrentLocation = function () {
             MarkerCreatorService.createByCurrentLocation(function (marker) {
-                marker.options.labelContent = 'Estás aquí';
                 $scope.currentlocation = marker;
                 $scope.map.markers=[];
                 $scope.map.markers.push(marker);
