@@ -115,6 +115,7 @@ app.controller('MapCtrl', ['MarkerCreatorService', '$scope','$http', function (M
                 $scope.currentlocation = marker;
                 $scope.map.markers=[];
                 $scope.map.markers.push(marker);
+                $scope.listalugares =[];
                 refresh(marker);
             });
         };
