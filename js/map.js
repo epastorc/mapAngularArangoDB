@@ -51,7 +51,7 @@ app.factory('MarkerCreatorService', function () {
 
 app.controller('MapCtrl', ['MarkerCreatorService', '$scope','$http', function (MarkerCreatorService, $scope,$http) {
         $scope.value = 1500;
-
+        $scope.listalugares =[];
         MarkerCreatorService.createByCoords(39.4858977, -6.370572100000004, "Estás aquí", function (marker) {
             $scope.currentlocation = marker;
         });
@@ -97,6 +97,7 @@ app.controller('MapCtrl', ['MarkerCreatorService', '$scope','$http', function (M
                         $scope.currentlocation = marker;
                         $scope.map.markers=[];
                         $scope.map.markers.push(marker);
+                        $scope.listalugares =[];
                         refresh(marker);
                         $scope.$apply();
                     });
